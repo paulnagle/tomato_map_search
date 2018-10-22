@@ -138,9 +138,9 @@ const tomato_map_search = function($) {
       markerContent += '"  target="_blank">Directions</a>';
 
       var listContent = "<tr  id='" + resultID + "' >";
-      listContent += "<td>" + val.start_time.substring(0, 5)  + "</td>";
-      listContent += "<td><b>" + val.meeting_name + "</b>";
-      if (val.location_text)            { listContent += ", " + val.location_text ; }
+      listContent += "<td>" + val.start_time.substring(0, 5)  + "</td><td>";
+      if (val.meeting_name != "NA Meeting") { listContent += "<b>" + val.meeting_name + " </b>"; }
+      if (val.location_text)            { listContent += val.location_text ; }
       if (val.location_street)          { listContent += ", " + val.location_street; }
       if (val.location_info)            { listContent += ", " +  val.location_info; }
       if (val.location_city_subsection) { listContent += ", " +  val.location_city_subsection; }
