@@ -43,10 +43,6 @@ const tomato_map_search = function($) {
     size: "l"
   });
 
-  var get_unique_id = function() {
-    return '_' + Math.random().toString(36).substr(2, 9);
-  };
-
   var isEmpty = function(object) {
     for (var i in object) {
       return true;
@@ -125,10 +121,7 @@ const tomato_map_search = function($) {
   var processSingleJSONMeetingResult = function(val) {
     if (isMeetingOnMap(val)) {
 
-      var resultID = get_unique_id();
-
-      var listContent = "<tr  id='" + resultID + "' >";
-      listContent += "<td>" + val.start_time.substring(0, 5)  + "<br></td><td>";
+      var listContent = "<tr><td>" + val.start_time.substring(0, 5)  + "<br></td><td>";
       if (val.meeting_name != "NA Meeting") { listContent += "<b>" + val.meeting_name + " </b>"; }
       if (val.location_text)            { listContent += val.location_text ; }
       if (val.location_street)          { listContent += ", " + val.location_street; }
@@ -182,45 +175,13 @@ const tomato_map_search = function($) {
       var aMarker = L.marker([val.latitude, val.longitude], {
         icon: naIcon
       });
-      aMarker.unique_id = resultID;
       aMarker.dayOfWeek = val.weekday_tinyint;
       aMarker.bindPopup(markerContent, {
         autoPan: false,
         className: 'custom-popup'
       });
-      aMarker.on("click", highlightMeeting);
       markerClusterer.addLayer(aMarker);
     }
-  }
-
-  var highlightMeeting = function(e) {
-    var nav_link;
-
-    switch (e.target.dayOfWeek) {
-      case "1":
-        $("#myTab li:eq(0) a").tab('show');
-        break;
-      case "2":
-        $("#myTab li:eq(1) a").tab('show');
-        break;
-      case "3":
-        $("#myTab li:eq(2) a").tab('show');
-        break;
-      case "4":
-        $("#myTab li:eq(3) a").tab('show');
-        break;
-      case "5":
-        $("#myTab li:eq(4) a").tab('show');
-        break;
-      case "6":
-        $("#myTab li:eq(5) a").tab('show');
-        break
-      case "7":
-        $("#myTab li:eq(6) a").tab('show');
-        break;
-    }
-    $("tr").removeClass("table-primary");
-    $("#" + e.target.unique_id).addClass("table-primary");
   }
 
   var runSearch = function() {
