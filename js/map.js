@@ -1,7 +1,7 @@
 const tomato_map_search = function($) {
   "use strict";
 
-  var DEBUG = true;
+  var DEBUG = false;
   // Dont forget to comment all of this
   var map = null;
   var circle = null;
@@ -109,10 +109,8 @@ const tomato_map_search = function($) {
   var isMeetingOnMap = function(meeting) {
     var thisMeetingLocation =  new L.LatLng(meeting.latitude, meeting.longitude);
     if (map.getBounds().contains(thisMeetingLocation)) {
-    //      DEBUG && console && console.log("This meeting is on the map");
       return true;
     } else {
-    //      DEBUG && console && console.log("NOT on the map");
       return false;
     }
   }
@@ -122,15 +120,15 @@ const tomato_map_search = function($) {
 
       var listContent = "<tr><td>" + val.start_time.substring(0, 5)  + "<br></td><td>";
       if (val.meeting_name != "NA Meeting") { listContent += "<b>" + val.meeting_name + " </b>"; }
-      if (val.location_text)            { listContent += val.location_text ; }
-      if (val.location_street)          { listContent += ", " + val.location_street; }
-      if (val.location_info)            { listContent += ", " +  val.location_info; }
-      if (val.location_city_subsection) { listContent += ", " +  val.location_city_subsection; }
-      if (val.location_neighborhood)    { listContent += ", " +  val.location_neighborhood; }
-      if (val.location_municipality)    { listContent += ", " +  val.location_municipality; }
-      if (val.location_sub_province)    { listContent += ", " +  val.location_sub_province; }
-      if (val.location_province)        { listContent += ", " +  val.location_province; }
-      if (val.formats)                  { listContent += "<br><i>Formats: </i>" + val.formats ; }
+      if (val.location_text)                { listContent += val.location_text ; }
+      if (val.location_street)              { listContent += ", " + val.location_street; }
+      if (val.location_info)                { listContent += ", " +  val.location_info; }
+      if (val.location_city_subsection)     { listContent += ", " +  val.location_city_subsection; }
+      if (val.location_neighborhood)        { listContent += ", " +  val.location_neighborhood; }
+      if (val.location_municipality)        { listContent += ", " +  val.location_municipality; }
+      if (val.location_sub_province)        { listContent += ", " +  val.location_sub_province; }
+      if (val.location_province)            { listContent += ", " +  val.location_province; }
+      if (val.formats)                      { listContent += "<br><i>Formats: </i>" + val.formats ; }
       listContent += '<br><a href="http://maps.google.com/maps?daddr=';
       listContent += val.latitude + ',' + val.longitude;
       listContent += '"  target="_blank">Directions </a></td>';
