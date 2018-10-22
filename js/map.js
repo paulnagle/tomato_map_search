@@ -29,11 +29,8 @@ const tomato_map_search = function($) {
 
   var openTable = "  <thead>";
   openTable    += "   <tr>";
-  openTable    += "    <th>Name</th>";
   openTable    += "    <th>Time</th>";
-  openTable    += "    <th>Location</th>";
-  openTable    += "    <th>Format</th>";
-  openTable    += "    <th>Directions</th>";
+  openTable    += "    <th>Meeting</th>";
   openTable    += "   </tr>";
   openTable    += "  </thead>";
   openTable    += "  <tbody>";
@@ -57,7 +54,6 @@ const tomato_map_search = function($) {
     return false;
   }
 
-  // This function creates a new map, then runs a new search.
   var newMap = function() {
     DEBUG && console && console.log("Running newMap()");
     map = L.map('map-canvas', {
@@ -87,7 +83,6 @@ const tomato_map_search = function($) {
     map.spin(false);
   }
 
-  // This function converts a number to a day of the week
   var dayOfWeekAsString = function(dayIndex) {
     return ["not a day?", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][dayIndex];
   }
@@ -99,16 +94,15 @@ const tomato_map_search = function($) {
     return mapCornerDistance;
   }
 
-  // This function generates the URL to query the BMLT based on the settings in the Settings Panel
   var buildSearchURL = function() {
     var search_url = "https://tomato.na-bmlt.org/main_server/client_interface/json/";
     search_url += "?switcher=GetSearchResults";
     search_url += "&geo_width_km=" + getMapCornerDistance();
     search_url += "&long_val=" + map.getCenter().lng;
     search_url += "&lat_val=" + map.getCenter().lat;
-    search_url += "&sort_key=sort_results_by_distance";
-    search_url += "&data_field_key=meeting_name,weekday_tinyint,start_time,location_text,location_street,location_info,distance_in_km,latitude,longitude,formats";
-    search_url += "&get_used_formats";
+    search_url += "&data_field_key=weekday_tinyint,start_time,";
+    search_url += "meeting_name,location_text,location_info,location_street,location_city_subsection,location_neighborhood,location_municipality,location_sub_province,location_province,";
+    search_url += "latitude,longitude,formats";
     search_url += "&callingApp=tomato_map_search";
 
     DEBUG && console && console.log("Search URL = " + search_url);
@@ -116,13 +110,14 @@ const tomato_map_search = function($) {
     return search_url;
   }
 
+
   var isMeetingOnMap = function(meeting) {
     var thisMeetingLocation =  new L.LatLng(meeting.latitude, meeting.longitude);
     if (map.getBounds().contains(thisMeetingLocation)) {
-//      DEBUG && console && console.log("This meeting is on the map");
+    //      DEBUG && console && console.log("This meeting is on the map");
       return true;
     } else {
-//      DEBUG && console && console.log("NOT on the map");
+    //      DEBUG && console && console.log("NOT on the map");
       return false;
     }
   }
@@ -134,8 +129,8 @@ const tomato_map_search = function($) {
 
       var markerContent = "<h4>" + val.meeting_name + "</h4>";
       markerContent += "<i>" + dayOfWeekAsString(val.weekday_tinyint)
-      markerContent += "&nbsp;" + val.start_time.substring(0, 5) + "</i><br />";
-      markerContent +=  val.location_text + "<br />" + val.location_street + "<br />";
+      markerContent += "&nbsp;" + val.start_time.substring(0, 5) + "</i>";
+      markerContent +=  val.location_text + " ," + val.location_street + " ,";
       markerContent += "<i>" + val.location_info + "</i><br />";
       markerContent += '<a href="http://maps.google.com/maps?';
       markerContent += '&daddr='
@@ -143,15 +138,20 @@ const tomato_map_search = function($) {
       markerContent += '"  target="_blank">Directions</a>';
 
       var listContent = "<tr  id='" + resultID + "' >";
-      listContent += "<td>" + val.meeting_name + "</td>";
-      listContent += "<td>" + dayOfWeekAsString(val.weekday_tinyint)
-      listContent += "&nbsp;" + val.start_time.substring(0, 5) + "</td>";
-      listContent += "<td>" + val.location_text + "&nbsp;" + val.location_street + "<br>";
-      listContent += "<i>" + val.location_info + "</i></td>";
-      listContent += "<td>" + val.formats + "</td>";
-      listContent += '<td><a href="http://maps.google.com/maps?daddr=';
+      listContent += "<td>" + val.start_time.substring(0, 5)  + "</td>";
+      listContent += "<td><b>" + val.meeting_name + ", </b>";
+      if (val.location_text)            { listContent += val.location_text ; }
+      if (val.location_street)          { listContent += ", " + val.location_street; }
+      if (val.location_info)            { listContent += ", " +  val.location_info; }
+      if (val.location_city_subsection) { listContent += ", " +  val.location_city_subsection; }
+      if (val.location_neighborhood)    { listContent += ", " +  val.location_neighborhood; }
+      if (val.location_municipality)    { listContent += ", " +  val.location_municipality; }
+      if (val.location_sub_province)    { listContent += ", " +  val.location_sub_province; }
+      if (val.location_province)        { listContent += ", " +  val.location_province; }
+      if (val.formats)                  { listContent += "<br><i>Formats: </i>" + val.formats ; }
+      listContent += '<br><a href="http://maps.google.com/maps?daddr=';
       listContent += val.latitude + ',' + val.longitude;
-      listContent += '"  target="_blank">Directions </a></li></td>';
+      listContent += '"  target="_blank">Directions </a></td>';
       listContent += "</tr>";
 
       switch (val.weekday_tinyint) {
@@ -230,7 +230,6 @@ const tomato_map_search = function($) {
     $("#" + e.target.unique_id).addClass("table-primary");
   }
 
-  // This function runs the query to the BMLT and displays the results on the map
   var runSearch = function() {
     DEBUG && console && console.log("**** runSearch()****");
 
@@ -259,17 +258,14 @@ const tomato_map_search = function($) {
       DEBUG && console && console.log("**** runSearch() -> getJSON");
 
       $("#list-results").empty();
-
       markerClusterer = new L.markerClusterGroup({
         showCoverageOnHover: false,
         removeOutsideVisibleBounds: false
       });
 
-      if (!jQuery.isEmptyObject(data.meetings)) {
+      if (!jQuery.isEmptyObject(data)) {
         DEBUG && console && console.log("**** Some meetings were returned ****");
-      //  DEBUG && console && console.log(JSON.stringify(data.meetings));
-
-        $.each(data.meetings, function(key, val) {
+        $.each(data, function(key, val) {
           processSingleJSONMeetingResult(val);
         });
       } else {
@@ -344,7 +340,6 @@ const tomato_map_search = function($) {
     });
   }
 
-  // Expose one public method to be called from the html page
   return {
     doIt: function() {
       newMap();
