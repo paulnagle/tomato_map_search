@@ -27,9 +27,7 @@ const tomato_map_search = function($) {
   var friExpandLi = "";
   var satExpandLi = "";
 
-  var openTable = "<div class='table-responsive'>";
-  openTable    += " <table class='table table-bordered table-striped display'>";
-  openTable    += "  <thead>";
+  var openTable = "  <thead>";
   openTable    += "   <tr>";
   openTable    += "    <th>Name</th>";
   openTable    += "    <th>Time</th>";
@@ -281,36 +279,43 @@ const tomato_map_search = function($) {
       var result = "<div class='tab-content' id='myTabContent'>";
 
       result += "<div id='sunday' class='tab-pane fade show active' role='tabpanel' aria-labelledby='sunday-tab'>";
+      result += "<div class='table-responsive'> <table id='sunday-table'  class='table table-bordered table-striped display'>";
       result += openTable;
       result += sunExpandLi;
       result += closeTable;
 
       result += "  <div id='monday' class='tab-pane fade' role='tabpanel' aria-labelledby='monday-tab'>";
+      result += "   <div class='table-responsive'> <table id='monday-table'  class='table table-bordered table-striped display'>";
       result += openTable;
       result += monExpandLi;
       result += closeTable;
 
       result += "  <div id='tuesday' class='tab-pane fade' role='tabpanel' aria-labelledby='tuesday-tab'>";
+      result += "   <div class='table-responsive'> <table id='tuesday-table'  class='table table-bordered table-striped display'>";
       result += openTable;
       result += tueExpandLi;
       result += closeTable;
 
       result += "  <div id='wednesday' class='tab-pane fade' role='tabpanel' aria-labelledby='wednesday-tab'>";
+      result += "   <div class='table-responsive'> <table id='wednesday-table'  class='table table-bordered table-striped display'>";
       result += openTable;
       result += wedExpandLi;
       result += closeTable;
 
       result += "  <div id='thursday' class='tab-pane fade' role='tabpanel' aria-labelledby='thursday-tab'>";
+      result += "   <div class='table-responsive'> <table id='thursday-table'  class='table table-bordered table-striped display'>";
       result += openTable;
       result += thuExpandLi;
       result += closeTable;
 
       result += "  <div id='friday' class='tab-pane fade' role='tabpanel' aria-labelledby='friday-tab'>";
+      result += "   <div class='table-responsive'> <table id='friday-table'  class='table table-bordered table-striped display'>";
       result += openTable;
       result += friExpandLi;
       result += closeTable;
 
       result += "  <div id='saturday' class='tab-pane fade' role='tabpanel' aria-labelledby='saturday-tab'>";
+      result += "   <div class='table-responsive'> <table id='saturday-table'  class='table table-bordered table-striped display'>";
       result += openTable;
       result += satExpandLi;
       result += closeTable;
@@ -327,6 +332,15 @@ const tomato_map_search = function($) {
 
       map.addLayer(markerClusterer);
       map.spin(false);
+
+      $('#monday-table').DataTable();
+      $('#tuesday-table').DataTable();
+      $('#wednesday-table').DataTable();
+      $('#thursday-table').DataTable();
+      $('#friday-table').DataTable();
+      $('#saturday-table').DataTable();
+      $('#sunday-table').DataTable();
+
     });
   }
 
