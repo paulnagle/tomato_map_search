@@ -127,18 +127,8 @@ const tomato_map_search = function($) {
 
       var resultID = get_unique_id();
 
-      var markerContent = "<h4>" + val.meeting_name + "</h4>";
-      markerContent += "<i>" + dayOfWeekAsString(val.weekday_tinyint)
-      markerContent += "&nbsp;" + val.start_time.substring(0, 5) + "</i>";
-      markerContent +=  val.location_text + " ," + val.location_street + " ,";
-      markerContent += "<i>" + val.location_info + "</i><br />";
-      markerContent += '<a href="http://maps.google.com/maps?';
-      markerContent += '&daddr='
-      markerContent += val.latitude + ',' + val.longitude;
-      markerContent += '"  target="_blank">Directions</a>';
-
       var listContent = "<tr  id='" + resultID + "' >";
-      listContent += "<td>" + val.start_time.substring(0, 5)  + "</td><td>";
+      listContent += "<td>" + val.start_time.substring(0, 5)  + "<br></td><td>";
       if (val.meeting_name != "NA Meeting") { listContent += "<b>" + val.meeting_name + " </b>"; }
       if (val.location_text)            { listContent += val.location_text ; }
       if (val.location_street)          { listContent += ", " + val.location_street; }
@@ -153,6 +143,9 @@ const tomato_map_search = function($) {
       listContent += val.latitude + ',' + val.longitude;
       listContent += '"  target="_blank">Directions </a></td>';
       listContent += "</tr>";
+
+      var markerContent = dayOfWeekAsString(val.weekday_tinyint) + " ";
+      markerContent += listContent;
 
       switch (val.weekday_tinyint) {
         case "1":
