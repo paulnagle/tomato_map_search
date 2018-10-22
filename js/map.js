@@ -8,7 +8,6 @@ const tomato_map_search = function($) {
   var markerClusterer = null;
   var myLatLng = new L.latLng(53.341318, -6.270205); // Irish Service Office
   var searchZoom = 10; // default to 10
-  var meeting_formats = [];
   var jsonQuery;
 
   var sunCount = 0;
@@ -203,8 +202,6 @@ const tomato_map_search = function($) {
 
     sunCount = monCount = tueCount = wedCount = thuCount = friCount = satCount = 0;
     sunExpandLi = monExpandLi = tueExpandLi = wedExpandLi = thuExpandLi = friExpandLi = satExpandLi = "";
-
-    meeting_formats = [];
 
     var search_url = buildSearchURL();
 
