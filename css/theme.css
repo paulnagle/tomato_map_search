@@ -1,7 +1,7 @@
 body {
   padding-top: 10px;
   padding-bottom: 30px;
-  font-size: 80%;
+  font-size: 100%;
 }
 
 .container {
@@ -27,4 +27,11 @@ html, body {
 }
 .custom-popup {
 
+}
+
+
+
+.nav-tabs .nav-item .nav-link.active {
+  background-color: #0080FF;
+  color: #FFFFFF;
 }

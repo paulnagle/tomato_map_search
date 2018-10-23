@@ -9,6 +9,7 @@ const tomato_map_search = function($) {
   var myLatLng = new L.latLng(53.341318, -6.270205); // Irish Service Office
   var searchZoom = 10; // default to 10
   var jsonQuery;
+  var activeTab;
 
   var sunCount = 0;
   var monCount = 0;
@@ -26,13 +27,21 @@ const tomato_map_search = function($) {
   var friExpandLi = "";
   var satExpandLi = "";
 
+  var sunMarkers = [];
+  var monMarkers = [];
+  var tueMarkers = [];
+  var wedMarkers = [];
+  var thuMarkers = [];
+  var friMarkers = [];
+  var satMarkers = [];
+
   var openTable = "  <thead>";
-  openTable    += "   <tr>";
-  openTable    += "    <th>Time</th>";
-  openTable    += "    <th>Meeting</th>";
-  openTable    += "   </tr>";
-  openTable    += "  </thead>";
-  openTable    += "  <tbody>";
+  openTable += "   <tr>";
+  openTable += "    <th>Time</th>";
+  openTable += "    <th>Meeting</th>";
+  openTable += "   </tr>";
+  openTable += "  </thead>";
+  openTable += "  <tbody>";
 
   var closeTable = "  </tbody></table></div></div>";
 
@@ -105,9 +114,8 @@ const tomato_map_search = function($) {
     return search_url;
   }
 
-
   var isMeetingOnMap = function(meeting) {
-    var thisMeetingLocation =  new L.LatLng(meeting.latitude, meeting.longitude);
+    var thisMeetingLocation = new L.LatLng(meeting.latitude, meeting.longitude);
     if (map.getBounds().contains(thisMeetingLocation)) {
       return true;
     } else {
@@ -118,17 +126,37 @@ const tomato_map_search = function($) {
   var processSingleJSONMeetingResult = function(val) {
     if (isMeetingOnMap(val)) {
 
-      var listContent = "<tr><td>" + val.start_time.substring(0, 5)  + "<br></td><td>";
-      if (val.meeting_name != "NA Meeting") { listContent += "<b>" + val.meeting_name + " </b>"; }
-      if (val.location_text)                { listContent += val.location_text ; }
-      if (val.location_street)              { listContent += ", " + val.location_street; }
-      if (val.location_info)                { listContent += ", " +  val.location_info; }
-      if (val.location_city_subsection)     { listContent += ", " +  val.location_city_subsection; }
-      if (val.location_neighborhood)        { listContent += ", " +  val.location_neighborhood; }
-      if (val.location_municipality)        { listContent += ", " +  val.location_municipality; }
-      if (val.location_sub_province)        { listContent += ", " +  val.location_sub_province; }
-      if (val.location_province)            { listContent += ", " +  val.location_province; }
-      if (val.formats)                      { listContent += "<br><i>Formats: </i>" + val.formats ; }
+      var listContent = "<tr><td>" + val.start_time.substring(0, 5) + "<br></td><td>";
+      if (val.meeting_name != "NA Meeting") {
+        listContent += "<b>" + val.meeting_name + " </b>";
+      }
+      if (val.location_text) {
+        listContent += val.location_text;
+      }
+      if (val.location_street) {
+        listContent += ", " + val.location_street;
+      }
+      if (val.location_info) {
+        listContent += ", " + val.location_info;
+      }
+      if (val.location_city_subsection) {
+        listContent += ", " + val.location_city_subsection;
+      }
+      if (val.location_neighborhood) {
+        listContent += ", " + val.location_neighborhood;
+      }
+      if (val.location_municipality) {
+        listContent += ", " + val.location_municipality;
+      }
+      if (val.location_sub_province) {
+        listContent += ", " + val.location_sub_province;
+      }
+      if (val.location_province) {
+        listContent += ", " + val.location_province;
+      }
+      if (val.formats) {
+        listContent += "<br><i>Formats: </i>" + val.formats;
+      }
       listContent += '<br><a href="http://maps.google.com/maps?daddr=';
       listContent += val.latitude + ',' + val.longitude;
       listContent += '"  target="_blank">Directions </a></td>';
@@ -137,53 +165,58 @@ const tomato_map_search = function($) {
       var markerContent = dayOfWeekAsString(val.weekday_tinyint) + " ";
       markerContent += listContent;
 
-      switch (val.weekday_tinyint) {
-        case "1":
-          sunCount++;
-          sunExpandLi = sunExpandLi + listContent;
-          break;
-        case "2":
-          monCount++;
-          monExpandLi = monExpandLi + listContent;
-          break;
-        case "3":
-          tueCount++;
-          tueExpandLi = tueExpandLi + listContent;
-          break;
-        case "4":
-          wedCount++;
-          wedExpandLi = wedExpandLi + listContent;
-          break;
-        case "5":
-          thuCount++;
-          thuExpandLi = thuExpandLi + listContent;
-          break;
-        case "6":
-          friCount++;
-          friExpandLi = friExpandLi + listContent;
-          break;
-        case "7":
-          satCount++;
-          satExpandLi = satExpandLi + listContent;
-          break;
-      }
-
-      // Add markers to the markerClusterer Layer
       var aMarker = L.marker([val.latitude, val.longitude], {
         icon: naIcon
       });
-      aMarker.dayOfWeek = val.weekday_tinyint;
       aMarker.bindPopup(markerContent, {
         autoPan: false,
         className: 'custom-popup'
       });
-      markerClusterer.addLayer(aMarker);
+
+      switch (val.weekday_tinyint) {
+        case "1":
+          sunCount++;
+          sunExpandLi = sunExpandLi + listContent;
+          sunMarkers.push(aMarker);
+          break;
+        case "2":
+          monCount++;
+          monExpandLi = monExpandLi + listContent;
+          monMarkers.push(aMarker);
+          break;
+        case "3":
+          tueCount++;
+          tueExpandLi = tueExpandLi + listContent;
+          tueMarkers.push(aMarker);
+          break;
+        case "4":
+          wedCount++;
+          wedExpandLi = wedExpandLi + listContent;
+          wedMarkers.push(aMarker);
+          break;
+        case "5":
+          thuCount++;
+          thuExpandLi = thuExpandLi + listContent;
+          thuMarkers.push(aMarker);
+          break;
+        case "6":
+          friCount++;
+          friExpandLi = friExpandLi + listContent;
+          friMarkers.push(aMarker);
+          break;
+        case "7":
+          satCount++;
+          satExpandLi = satExpandLi + listContent;
+          satMarkers.push(aMarker);
+          break;
+      }
     }
   }
 
   var runSearch = function() {
     DEBUG && console && console.log("**** runSearch()****");
-
+    monMarkers.length = tueMarkers.length = wedMarkers.length = thuMarkers.length = friMarkers.length = satMarkers.length = sunMarkers.length = 0;
+    
     if (jsonQuery) {
       DEBUG && console && console.log("*ABORTING OLD QUERY");
       map.spin(false);
@@ -275,6 +308,34 @@ const tomato_map_search = function($) {
       document.getElementById("friday-badge").innerHTML = friCount;
       document.getElementById("saturday-badge").innerHTML = satCount;
 
+      markerClusterer.clearLayers();
+
+      switch (activeTab) {
+        case "sunday-tab":
+        console.log("Adding Sunday layer to map");
+
+          markerClusterer.addLayers(sunMarkers);
+          break;
+        case "monday-tab":
+          markerClusterer.addLayers(monMarkers);
+          break;
+        case "tuesday-tab":
+          markerClusterer.addLayers(tueMarkers);
+          break;
+        case "wednesday-tab":
+          markerClusterer.addLayers(wedMarkers);
+          break;
+        case "thursday-tab":
+          markerClusterer.addLayers(thuMarkers);
+          break;
+        case "friday-tab":
+          markerClusterer.addLayers(friMarkers);
+          break;
+        case "saturday-tab":
+          markerClusterer.addLayers(satMarkers);
+          break;
+      }
+
       map.addLayer(markerClusterer);
       map.spin(false);
 
@@ -288,6 +349,45 @@ const tomato_map_search = function($) {
 
     });
   }
+
+  $(document).ready(function() {
+    $('#sunday-tab').on('click', function(e) {
+      console.log("Adding SUnday layer to map");
+      activeTab = e.target.id;
+      markerClusterer.clearLayers();
+      markerClusterer.addLayers(sunMarkers);
+    })
+    $('#monday-tab').on('click', function(e) {
+      activeTab = e.target.id;
+      markerClusterer.clearLayers();
+      markerClusterer.addLayers(monMarkers);
+    })
+    $('#tuesday-tab').on('click', function(e) {
+      activeTab = e.target.id;
+      markerClusterer.clearLayers();
+      markerClusterer.addLayers(tueMarkers);
+    })
+    $('#wednesday-tab').on('click', function(e) {
+      activeTab = e.target.id;
+      markerClusterer.clearLayers();
+      markerClusterer.addLayers(wedMarkers);
+    })
+    $('#thursday-tab').on('click', function(e) {
+      activeTab = e.target.id;
+      markerClusterer.clearLayers();
+      markerClusterer.addLayers(thuMarkers);
+    })
+    $('#friday-tab').on('click', function(e) {
+      activeTab = e.target.id;
+      markerClusterer.clearLayers();
+      markerClusterer.addLayers(friMarkers);
+    })
+    $('#saturday-tab').on('click', function(e) {
+      activeTab = e.target.id;
+      markerClusterer.clearLayers();
+      markerClusterer.addLayers(satMarkers);
+    })
+  });
 
   return {
     doIt: function() {
