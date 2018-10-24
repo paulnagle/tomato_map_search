@@ -139,31 +139,31 @@ const tomato_map_search = function($) {
 
       var listContent = "<tr><td>" + tConvert( val.start_time ) + "<br></td><td>";
       if (val.meeting_name != "NA Meeting") {
-        listContent += "<b>" + val.meeting_name + " </b>";
+        listContent += "<b>" + val.meeting_name + ", </b>";
       }
       if (val.location_text) {
-        listContent += val.location_text;
+        listContent += val.location_text + ", ";
       }
       if (val.location_street) {
-        listContent += ", " + val.location_street;
+        listContent += val.location_street + ", ";
       }
       if (val.location_info) {
-        listContent += ", " + val.location_info;
+        listContent += val.location_info + ", ";
       }
       if (val.location_city_subsection) {
-        listContent += ", " + val.location_city_subsection;
+        listContent += val.location_city_subsection + ", ";
       }
       if (val.location_neighborhood) {
-        listContent += ", " + val.location_neighborhood;
+        listContent += val.location_neighborhood + ", ";
       }
       if (val.location_municipality) {
-        listContent += ", " + val.location_municipality;
+        listContent += val.location_municipality + ", ";
       }
       if (val.location_sub_province) {
-        listContent += ", " + val.location_sub_province;
+        listContent += val.location_sub_province + ", ";
       }
       if (val.location_province) {
-        listContent += ", " + val.location_province;
+        listContent += val.location_province;
       }
       if (val.formats) {
         listContent += "<br><i>Formats: </i>" + val.formats;
