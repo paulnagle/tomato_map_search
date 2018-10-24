@@ -58,12 +58,19 @@ const tomato_map_search = function($) {
     return false;
   }
 
+  var tConvert = function(timeString) {
+    var H = +timeString.substr(0, 2);
+    var h = (H % 12) || 12;
+    var ampm = H < 12 ? "am" : "pm";
+    timeString = h + timeString.substr(2, 3) + ampm;
+    return timeString;
+  }
+
   var newMap = function() {
     DEBUG && console && console.log("Running newMap()");
     map = L.map('map-canvas', {
       minZoom: 7,
-      maxZoom: 17,
-      detectRetina: true
+      maxZoom: 17
     });
     map.spin(true);
 
@@ -81,6 +88,10 @@ const tomato_map_search = function($) {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
+
+//     L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
+// 	attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
+// }).addTo(map);
 
     map.setView(myLatLng, 9);
     L.control.locate().addTo(map);
@@ -126,7 +137,7 @@ const tomato_map_search = function($) {
   var processSingleJSONMeetingResult = function(val) {
     if (isMeetingOnMap(val)) {
 
-      var listContent = "<tr><td>" + val.start_time.substring(0, 5) + "<br></td><td>";
+      var listContent = "<tr><td>" + tConvert( val.start_time ) + "<br></td><td>";
       if (val.meeting_name != "NA Meeting") {
         listContent += "<b>" + val.meeting_name + " </b>";
       }
