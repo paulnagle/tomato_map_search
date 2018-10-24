@@ -216,7 +216,7 @@ const tomato_map_search = function($) {
   var runSearch = function() {
     DEBUG && console && console.log("**** runSearch()****");
     monMarkers.length = tueMarkers.length = wedMarkers.length = thuMarkers.length = friMarkers.length = satMarkers.length = sunMarkers.length = 0;
-    
+
     if (jsonQuery) {
       DEBUG && console && console.log("*ABORTING OLD QUERY");
       map.spin(false);
@@ -312,8 +312,6 @@ const tomato_map_search = function($) {
 
       switch (activeTab) {
         case "sunday-tab":
-        console.log("Adding Sunday layer to map");
-
           markerClusterer.addLayers(sunMarkers);
           break;
         case "monday-tab":
@@ -334,6 +332,19 @@ const tomato_map_search = function($) {
         case "saturday-tab":
           markerClusterer.addLayers(satMarkers);
           break;
+        default:
+        // Set active tab to today
+        var today = new Date().getDay();
+        switch (today) {
+          case 0: $('[href="#sunday"]').tab('show'); break;
+          case 1: $('[href="#monday"]').tab('show'); break;
+          case 2: $('[href="#tuesday"]').tab('show'); break;
+          case 3: $('[href="#wednesday"]').tab('show'); break;
+          case 4: $('[href="#thursday"]').tab('show'); break;
+          case 5: $('[href="#friday"]').tab('show'); break;
+          case 6: $('[href="#saturday"]').tab('show'); break;
+          default: $('[href="#sunday"]').tab('show');
+        }
       }
 
       map.addLayer(markerClusterer);
@@ -351,42 +362,42 @@ const tomato_map_search = function($) {
   }
 
   $(document).ready(function() {
-    $('#sunday-tab').on('click', function(e) {
-      console.log("Adding SUnday layer to map");
+    $('#sunday-tab').on('shown.bs.tab', function(e) {
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(sunMarkers);
     })
-    $('#monday-tab').on('click', function(e) {
+    $('#monday-tab').on('shown.bs.tab', function(e) {
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(monMarkers);
     })
-    $('#tuesday-tab').on('click', function(e) {
+    $('#tuesday-tab').on('shown.bs.tab', function(e) {
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(tueMarkers);
     })
-    $('#wednesday-tab').on('click', function(e) {
+    $('#wednesday-tab').on('shown.bs.tab', function(e) {
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(wedMarkers);
     })
-    $('#thursday-tab').on('click', function(e) {
+    $('#thursday-tab').on('shown.bs.tab', function(e) {
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(thuMarkers);
     })
-    $('#friday-tab').on('click', function(e) {
+    $('#friday-tab').on('shown.bs.tab', function(e) {
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(friMarkers);
     })
-    $('#saturday-tab').on('click', function(e) {
+    $('#saturday-tab').on('shown.bs.tab', function(e) {
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(satMarkers);
     })
+
   });
 
   return {
