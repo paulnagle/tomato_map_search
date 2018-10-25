@@ -45,12 +45,6 @@ const tomato_map_search = function($) {
 
   var closeTable = "  </tbody></table></div></div>";
 
-  var naIcon = L.MakiMarkers.icon({
-    icon: "marker",
-    color: "#f00",
-    size: "l"
-  });
-
   var isEmpty = function(object) {
     for (var i in object) {
       return true;
@@ -58,7 +52,7 @@ const tomato_map_search = function($) {
     return false;
   }
 
-  var tConvert = function(timeString) {
+  var timeConvert = function(timeString) {
     var H = +timeString.substr(0, 2);
     var h = (H % 12) || 12;
     var ampm = H < 12 ? "am" : "pm";
@@ -138,7 +132,7 @@ const tomato_map_search = function($) {
   var processSingleJSONMeetingResult = function(val) {
     if (isMeetingOnMap(val)) {
 
-      var listContent = "<tr><td>" + val.start_time.substring(0, 5) + " (" +tConvert(val.start_time) + ")" + " " + dayOfWeekAsString(val.weekday_tinyint) + "</td><td>";
+      var listContent = "<tr><td>" + val.start_time.substring(0, 5) + " (" +timeConvert(val.start_time) + ")" + "</td><td>";
       if (val.meeting_name != "NA Meeting") {
         listContent += "<b>" + val.meeting_name + ", </b>";
       }
@@ -275,7 +269,7 @@ const tomato_map_search = function($) {
 
   var resetSearch = function() {
     if (jsonQuery) {
-      DEBUG && console && console.log("*ABORTING OLD QUERY");
+      DEBUG && console && console.log("Delete old query...");
       map.spin(false);
       jsonQuery.abort();
     }
@@ -328,32 +322,46 @@ const tomato_map_search = function($) {
 
       markerClusterer.clearLayers();
 
+      DEBUG && console && console.log("activeTab : ", activeTab);
+
       switch (activeTab) {
         case "sunday-tab":
           markerClusterer.addLayers(sunMarkers);
           break;
         case "monday-tab":
           markerClusterer.addLayers(monMarkers);
+          $('[href="#sunday"]').tab('show');
+          $('[href="#monday"]').tab('show');
           break;
         case "tuesday-tab":
           markerClusterer.addLayers(tueMarkers);
+          $('[href="#sunday"]').tab('show');
+          $('[href="#tuesday"]').tab('show');
           break;
         case "wednesday-tab":
           markerClusterer.addLayers(wedMarkers);
+          $('[href="#sunday"]').tab('show');
+          $('[href="#wednesday"]').tab('show');
           break;
         case "thursday-tab":
           markerClusterer.addLayers(thuMarkers);
+          $('[href="#sunday"]').tab('show');
+          $('[href="#thursday"]').tab('show');
           break;
         case "friday-tab":
           markerClusterer.addLayers(friMarkers);
+          $('[href="#sunday"]').tab('show');
+          $('[href="#friday"]').tab('show');
           break;
         case "saturday-tab":
           markerClusterer.addLayers(satMarkers);
+          $('[href="#sunday"]').tab('show');
+          $('[href="#saturday"]').tab('show');
           break;
         default:
         // Set active tab to today
         var today = new Date().getDay();
-        console.log("Today is :", today);
+        DEBUG && console && console.log("Today is :", today);
         switch (today) {
           case 0: $('[href="#sunday"]').tab('show');    activeTab="sunday-tab";    break;
           case 1: $('[href="#monday"]').tab('show');    activeTab="monday-tab";    break;
@@ -381,36 +389,51 @@ const tomato_map_search = function($) {
 
   $(document).ready(function() {
     $('#sunday-tab').on('shown.bs.tab', function(e) {
+      DEBUG && console && console.log("#sunday-tab -> shown.bs.tab");
+      DEBUG && console && console.log("activeTab : [", e.target.id, "]");
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(sunMarkers);
     })
     $('#monday-tab').on('shown.bs.tab', function(e) {
+      DEBUG && console && console.log("#monday-tab -> shown.bs.tab");
+      DEBUG && console && console.log("activeTab : ", e.target.id);
+
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(monMarkers);
     })
     $('#tuesday-tab').on('shown.bs.tab', function(e) {
+      DEBUG && console && console.log("#tuesday-tab -> shown.bs.tab");
+      DEBUG && console && console.log("activeTab : ", e.target.id);
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(tueMarkers);
     })
     $('#wednesday-tab').on('shown.bs.tab', function(e) {
+      DEBUG && console && console.log("#wednesday-tab -> shown.bs.tab");
+      DEBUG && console && console.log("activeTab : ", e.target.id);
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(wedMarkers);
     })
     $('#thursday-tab').on('shown.bs.tab', function(e) {
+      DEBUG && console && console.log("#thursday-tab -> shown.bs.tab");
+      DEBUG && console && console.log("activeTab : ", e.target.id);
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(thuMarkers);
     })
     $('#friday-tab').on('shown.bs.tab', function(e) {
+      DEBUG && console && console.log("#friday-tab -> shown.bs.tab");
+      DEBUG && console && console.log("activeTab : ", e.target.id);
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(friMarkers);
     })
     $('#saturday-tab').on('shown.bs.tab', function(e) {
+      DEBUG && console && console.log("#saturday-tab -> shown.bs.tab");
+      DEBUG && console && console.log("activeTab : ", e.target.id);
       activeTab = e.target.id;
       markerClusterer.clearLayers();
       markerClusterer.addLayers(satMarkers);
