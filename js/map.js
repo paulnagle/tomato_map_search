@@ -68,7 +68,7 @@ const tomato_map_search = function($) {
 
   var newMap = function() {
     DEBUG && console && console.log("Running newMap()");
-    map = L.map('map-canvas', {
+    map = L.map('map', {
       minZoom: 7,
       maxZoom: 17
     });
@@ -89,9 +89,9 @@ const tomato_map_search = function($) {
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
 
-//     L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
-// 	attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
-// }).addTo(map);
+    //     L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {
+    // 	attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
+    // }).addTo(map);
 
     map.setView(myLatLng, 9);
     L.control.locate().addTo(map);
@@ -115,6 +115,7 @@ const tomato_map_search = function($) {
     search_url += "&geo_width_km=" + getMapCornerDistance();
     search_url += "&long_val=" + map.getCenter().lng;
     search_url += "&lat_val=" + map.getCenter().lat;
+    search_url += "&sort_key=weekday_tinyint,start_time";
     search_url += "&data_field_key=weekday_tinyint,start_time,";
     search_url += "meeting_name,location_text,location_info,location_street,location_city_subsection,location_neighborhood,location_municipality,location_sub_province,location_province,";
     search_url += "latitude,longitude,formats";
@@ -137,7 +138,7 @@ const tomato_map_search = function($) {
   var processSingleJSONMeetingResult = function(val) {
     if (isMeetingOnMap(val)) {
 
-      var listContent = "<tr><td>" + tConvert( val.start_time ) + "<br></td><td>";
+      var listContent = "<tr><td>" + val.start_time.substring(0, 5) + " (" +tConvert(val.start_time) + ")" + " " + dayOfWeekAsString(val.weekday_tinyint) + "</td><td>";
       if (val.meeting_name != "NA Meeting") {
         listContent += "<b>" + val.meeting_name + ", </b>";
       }
@@ -176,9 +177,7 @@ const tomato_map_search = function($) {
       var markerContent = dayOfWeekAsString(val.weekday_tinyint) + " ";
       markerContent += listContent;
 
-      var aMarker = L.marker([val.latitude, val.longitude], {
-        icon: naIcon
-      });
+      var aMarker = L.marker([val.latitude, val.longitude], {});
       aMarker.bindPopup(markerContent, {
         autoPan: false,
         className: 'custom-popup'
@@ -224,10 +223,57 @@ const tomato_map_search = function($) {
     }
   }
 
-  var runSearch = function() {
-    DEBUG && console && console.log("**** runSearch()****");
-    monMarkers.length = tueMarkers.length = wedMarkers.length = thuMarkers.length = friMarkers.length = satMarkers.length = sunMarkers.length = 0;
+  var generateResultTable = function() {
+    var result = "<div class='tab-content' id='myTabContent'>";
 
+    result += "<div id='sunday' class='tab-pane fade show active' role='tabpanel' aria-labelledby='sunday-tab'>";
+    result += "<div class='table-responsive'> <table id='sunday-table'  class='table table-bordered table-striped display'>";
+    result += openTable;
+    result += sunExpandLi;
+    result += closeTable;
+
+    result += "  <div id='monday' class='tab-pane fade' role='tabpanel' aria-labelledby='monday-tab'>";
+    result += "   <div class='table-responsive'> <table id='monday-table'  class='table table-bordered table-striped display'>";
+    result += openTable;
+    result += monExpandLi;
+    result += closeTable;
+
+    result += "  <div id='tuesday' class='tab-pane fade' role='tabpanel' aria-labelledby='tuesday-tab'>";
+    result += "   <div class='table-responsive'> <table id='tuesday-table'  class='table table-bordered table-striped display'>";
+    result += openTable;
+    result += tueExpandLi;
+    result += closeTable;
+
+    result += "  <div id='wednesday' class='tab-pane fade' role='tabpanel' aria-labelledby='wednesday-tab'>";
+    result += "   <div class='table-responsive'> <table id='wednesday-table'  class='table table-bordered table-striped display'>";
+    result += openTable;
+    result += wedExpandLi;
+    result += closeTable;
+
+    result += "  <div id='thursday' class='tab-pane fade' role='tabpanel' aria-labelledby='thursday-tab'>";
+    result += "   <div class='table-responsive'> <table id='thursday-table'  class='table table-bordered table-striped display'>";
+    result += openTable;
+    result += thuExpandLi;
+    result += closeTable;
+
+    result += "  <div id='friday' class='tab-pane fade' role='tabpanel' aria-labelledby='friday-tab'>";
+    result += "   <div class='table-responsive'> <table id='friday-table'  class='table table-bordered table-striped display'>";
+    result += openTable;
+    result += friExpandLi;
+    result += closeTable;
+
+    result += "  <div id='saturday' class='tab-pane fade' role='tabpanel' aria-labelledby='saturday-tab'>";
+    result += "   <div class='table-responsive'> <table id='saturday-table'  class='table table-bordered table-striped display'>";
+    result += openTable;
+    result += satExpandLi;
+    result += closeTable;
+
+    result += "</div>";
+
+    return result;
+  }
+
+  var resetSearch = function() {
     if (jsonQuery) {
       DEBUG && console && console.log("*ABORTING OLD QUERY");
       map.spin(false);
@@ -242,8 +288,15 @@ const tomato_map_search = function($) {
       map.spin(true);
     }
 
+    monMarkers.length = tueMarkers.length = wedMarkers.length = thuMarkers.length = friMarkers.length = satMarkers.length = sunMarkers.length = 0;
     sunCount = monCount = tueCount = wedCount = thuCount = friCount = satCount = 0;
     sunExpandLi = monExpandLi = tueExpandLi = wedExpandLi = thuExpandLi = friExpandLi = satExpandLi = "";
+  }
+
+  var runSearch = function() {
+    DEBUG && console && console.log("**** runSearch()****");
+
+    resetSearch();
 
     var search_url = buildSearchURL();
 
@@ -257,59 +310,13 @@ const tomato_map_search = function($) {
       });
 
       if (!jQuery.isEmptyObject(data)) {
-        DEBUG && console && console.log("**** Some meetings were returned ****");
         $.each(data, function(key, val) {
           processSingleJSONMeetingResult(val);
         });
-      } else {
-        DEBUG && console && console.log("**** No meetings were returned ****");
       }
 
-      var result = "<div class='tab-content' id='myTabContent'>";
+      var result = generateResultTable();
 
-      result += "<div id='sunday' class='tab-pane fade show active' role='tabpanel' aria-labelledby='sunday-tab'>";
-      result += "<div class='table-responsive'> <table id='sunday-table'  class='table table-bordered table-striped display'>";
-      result += openTable;
-      result += sunExpandLi;
-      result += closeTable;
-
-      result += "  <div id='monday' class='tab-pane fade' role='tabpanel' aria-labelledby='monday-tab'>";
-      result += "   <div class='table-responsive'> <table id='monday-table'  class='table table-bordered table-striped display'>";
-      result += openTable;
-      result += monExpandLi;
-      result += closeTable;
-
-      result += "  <div id='tuesday' class='tab-pane fade' role='tabpanel' aria-labelledby='tuesday-tab'>";
-      result += "   <div class='table-responsive'> <table id='tuesday-table'  class='table table-bordered table-striped display'>";
-      result += openTable;
-      result += tueExpandLi;
-      result += closeTable;
-
-      result += "  <div id='wednesday' class='tab-pane fade' role='tabpanel' aria-labelledby='wednesday-tab'>";
-      result += "   <div class='table-responsive'> <table id='wednesday-table'  class='table table-bordered table-striped display'>";
-      result += openTable;
-      result += wedExpandLi;
-      result += closeTable;
-
-      result += "  <div id='thursday' class='tab-pane fade' role='tabpanel' aria-labelledby='thursday-tab'>";
-      result += "   <div class='table-responsive'> <table id='thursday-table'  class='table table-bordered table-striped display'>";
-      result += openTable;
-      result += thuExpandLi;
-      result += closeTable;
-
-      result += "  <div id='friday' class='tab-pane fade' role='tabpanel' aria-labelledby='friday-tab'>";
-      result += "   <div class='table-responsive'> <table id='friday-table'  class='table table-bordered table-striped display'>";
-      result += openTable;
-      result += friExpandLi;
-      result += closeTable;
-
-      result += "  <div id='saturday' class='tab-pane fade' role='tabpanel' aria-labelledby='saturday-tab'>";
-      result += "   <div class='table-responsive'> <table id='saturday-table'  class='table table-bordered table-striped display'>";
-      result += openTable;
-      result += satExpandLi;
-      result += closeTable;
-
-      result += "</div>";
       document.getElementById("list_result").innerHTML = result;
       document.getElementById("sunday-badge").innerHTML = sunCount;
       document.getElementById("monday-badge").innerHTML = monCount;
@@ -346,15 +353,15 @@ const tomato_map_search = function($) {
         default:
         // Set active tab to today
         var today = new Date().getDay();
+        console.log("Today is :", today);
         switch (today) {
-          case 0: $('[href="#sunday"]').tab('show'); break;
-          case 1: $('[href="#monday"]').tab('show'); break;
-          case 2: $('[href="#tuesday"]').tab('show'); break;
-          case 3: $('[href="#wednesday"]').tab('show'); break;
-          case 4: $('[href="#thursday"]').tab('show'); break;
-          case 5: $('[href="#friday"]').tab('show'); break;
-          case 6: $('[href="#saturday"]').tab('show'); break;
-          default: $('[href="#sunday"]').tab('show');
+          case 0: $('[href="#sunday"]').tab('show');    activeTab="sunday-tab";    break;
+          case 1: $('[href="#monday"]').tab('show');    activeTab="monday-tab";    break;
+          case 2: $('[href="#tuesday"]').tab('show');   activeTab="tuesday-tab";   break;
+          case 3: $('[href="#wednesday"]').tab('show'); activeTab="wednesday-tab"; break;
+          case 4: $('[href="#thursday"]').tab('show');  activeTab="thursday-tab";  break;
+          case 5: $('[href="#friday"]').tab('show');    activeTab="friday-tab";    break;
+          case 6: $('[href="#saturday"]').tab('show');  activeTab="saturday-tab";  break;
         }
       }
 
